@@ -53,6 +53,8 @@ public class NetworkSpeed1 extends CordovaPlugin {
     private String mUnits;
     private boolean mDestroyed = false;
 
+    private Context mContext;
+
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -89,8 +91,8 @@ public class NetworkSpeed1 extends CordovaPlugin {
         }
     }
 
-    private void initializeNotification() {
-        //var me =this;
+    private void initializeNotification(Context context) {
+        this.mContext = context;
 
         mHandler = new Handler(Looper.getMainLooper()) {
 
@@ -113,7 +115,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
 
         };
 
-        mBuilder = new Notification.Builder(getActivity());
+        mBuilder = new Notification.Builder(mContext);
         mBuilder.setSmallIcon(Icon.createWithBitmap(createBitmapFromString("0", " KB")));
         mBuilder.setContentTitle("");
         mBuilder.setVisibility(Notification.VISIBILITY_SECRET);
