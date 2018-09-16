@@ -113,7 +113,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
 
         };
 
-        mBuilder = new Notification.Builder(Context.getActivity());
+        mBuilder = new Notification.Builder(getActivity());
         mBuilder.setSmallIcon(Icon.createWithBitmap(createBitmapFromString("0", " KB")));
         mBuilder.setContentTitle("");
         mBuilder.setVisibility(Notification.VISIBILITY_SECRET);
