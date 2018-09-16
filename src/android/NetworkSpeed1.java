@@ -19,6 +19,22 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 
+import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Icon;
+import android.net.TrafficStats;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+
+import java.util.Locale;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
