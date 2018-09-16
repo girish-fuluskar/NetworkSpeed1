@@ -50,7 +50,8 @@ public class NetworkSpeed1 extends CordovaPlugin {
     }
 
     private void startServiceNow(){
-        final Intent ismServiceIntent = new Intent(this, ISMService.class);
+        ISMService ismService = new ISMService();
+        final Intent ismServiceIntent = new Intent(this,ismService.class);
         ismServiceIntent.setPackage(this.getPackageName());
 
         startService(ismServiceIntent);
