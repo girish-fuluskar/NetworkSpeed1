@@ -53,10 +53,6 @@ public class NetworkSpeed1 extends CordovaPlugin {
     private String mUnits;
     private boolean mDestroyed = false;
 
-    public NetworkSpeed1(){
-        super("NetworkSpeed1");
-    }
-
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -94,6 +90,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
     }
 
     private void initializeNotification() {
+        var me =this;
 
         mHandler = new Handler(Looper.getMainLooper()) {
 
@@ -123,15 +120,15 @@ public class NetworkSpeed1 extends CordovaPlugin {
         mBuilder.setOngoing(true);
 
         
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent
-                .FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pendingIntent);
+        // PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent
+        //         .FLAG_UPDATE_CURRENT);
+        // mBuilder.setContentIntent(pendingIntent);
 
 
-        mNotifyMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+        // mNotifyMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mNotifyMgr.notify(mNotificationId, mBuilder.build());
 
-        startForeground(mNotificationId, mBuilder.build());
+        // startForeground(mNotificationId, mBuilder.build());
 
     }
 
@@ -207,12 +204,8 @@ public class NetworkSpeed1 extends CordovaPlugin {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        // very important:
-        if (mHelper != null) {
-            mHelper.disposeWhenFinished();
-            mHelper = null;
-        }
+        mDestroyed = true;
+        mNotifyMgr.cancelAll();
     }
 
 }
