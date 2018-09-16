@@ -57,29 +57,17 @@ public class NetworkSpeed1 extends CordovaPlugin {
 
 
     @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("coolMethod")) {
-            String message = args.getString(0);
-            this.coolMethod(message, callbackContext);
-            return true;
-        } else if(action.equals("startServiceNow")) {
-            this.startServiceNow();
+    public boolean execute(String action, Context context, CallbackContext callbackContext) throws JSONException {
+        if(action.equals("startServiceNow")) {
+            this.startServiceNow(context);
         }
         return false;
     }
 
-    private void coolMethod(String message, CallbackContext callbackContext) {
-        if (message != null && message.length() > 0) {
-            callbackContext.success(message);
-        } else {
-            callbackContext.error("Expected one non-empty string argument.");
-        }
-    }
-
-    private void startServiceNow(){
+    private void startServiceNow(Context context){
         int state = 1;
 
-        initializeNotification();
+        initializeNotification(context);
 
         while (!mDestroyed && state == 1) {
 
@@ -91,7 +79,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
         }
     }
 
-    private void initializeNotification() {
+    private void initializeNotification(Context context) {
 
         mHandler = new Handler(Looper.getMainLooper()) {
 
@@ -114,7 +102,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
 
         };
 
-        mBuilder = new Notification.Builder();
+        mBuilder = new Notification.Builder(context);
         mBuilder.setSmallIcon(Icon.createWithBitmap(createBitmapFromString("0", " KB")));
         mBuilder.setContentTitle("");
         mBuilder.setVisibility(Notification.VISIBILITY_SECRET);
