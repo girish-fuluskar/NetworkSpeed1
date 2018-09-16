@@ -29,6 +29,19 @@ import org.json.JSONObject;
  */
 public class NetworkSpeed1 extends CordovaPlugin {
 
+    private final int mNotificationId = 1;
+    private Handler mHandler;
+    private Notification.Builder mBuilder;
+    private NotificationManager mNotifyMgr;
+    private String mDownloadSpeedOutput;
+    private String mUnits;
+    private boolean mDestroyed = false;
+
+    public NetworkSpeed1(){
+        super("NetworkSpeed1");
+    }
+
+
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("coolMethod")) {
@@ -50,62 +63,130 @@ public class NetworkSpeed1 extends CordovaPlugin {
     }
 
     private void startServiceNow(){
-        ISMService ismService = new ISMService();
-        final Intent ismServiceIntent = new Intent(this,ismService.class);
-        ismServiceIntent.setPackage(this.getPackageName());
+        int state = 1;
 
-        startService(ismServiceIntent);
-    }
+        initializeNotification();
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mHelper == null) return;
+        while (!mDestroyed && state == 1) {
 
-        // Pass on the activity result to the helper for handling
-        if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-            // not handled, so handle it ourselves (here's where you'd
-            // perform any handling of activity results not related to in-app
-            // billing...
-            super.onActivityResult(requestCode, resultCode, data);
+            getDownloadSpeed();
+
+            Message completeMessage = mHandler.obtainMessage(1);
+            completeMessage.sendToTarget();
+
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    private void initializeNotification() {
+
+        mHandler = new Handler(Looper.getMainLooper()) {
+
+            @Override
+            public void handleMessage(Message inputMessage) {
+
+                if (mDestroyed) {
+                    return;
+                }
+
+                Bitmap bitmap = createBitmapFromString(mDownloadSpeedOutput, mUnits);
+
+                Icon icon = Icon.createWithBitmap(bitmap);
+
+                mBuilder.setSmallIcon(icon);
+
+                mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
+            }
+
+        };
+
+        mBuilder = new Notification.Builder(this);
+        mBuilder.setSmallIcon(Icon.createWithBitmap(createBitmapFromString("0", " KB")));
+        mBuilder.setContentTitle("");
+        mBuilder.setVisibility(Notification.VISIBILITY_SECRET);
+        mBuilder.setOngoing(true);
 
         
-        final Intent ismServiceIntent = new Intent(this, ISMService.class);
-        ismServiceIntent.setPackage(this.getPackageName());
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent
+                .FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pendingIntent);
 
-        //Switch meterSwitch = (Switch) findViewById(R.id.meter_switch);
 
-        /*Get meter state so that we'll know if it's enabled/disabled by user upon start*/
-        //SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.shared_pref), Context.MODE_PRIVATE);
-        //int state = sharedPref.getInt(getString(R.string.meter_state), 1);
-        //if (state == 1) {
-        //    meterSwitch.setChecked(true);
-        //}
+        mNotifyMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotifyMgr.notify(mNotificationId, mBuilder.build());
 
-        //final SharedPreferences.Editor editor = sharedPref.edit();
+        startForeground(mNotificationId, mBuilder.build());
 
-        // meterSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-        //     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        //         if (isChecked) {
-        //             editor.putInt(getString(R.string.meter_state), 1);
-        //             editor.commit();
-        //             startService(ismServiceIntent);
-        //         } else {
-        //             editor.putInt(getString(R.string.meter_state), 0);
-        //             editor.commit();
-        //             stopService(ismServiceIntent);
-        //         }
-        //     }
-        // });
-
-        startService(ismServiceIntent);
     }
+
+    private Bitmap createBitmapFromString(String speed, String units) {
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextSize(55);
+        paint.setTextAlign(Paint.Align.CENTER);
+
+        Paint unitsPaint = new Paint();
+        unitsPaint.setAntiAlias(true);
+        unitsPaint.setTextSize(40); // size is in pixels
+        unitsPaint.setTextAlign(Paint.Align.CENTER);
+
+        Rect textBounds = new Rect();
+        paint.getTextBounds(speed, 0, speed.length(), textBounds);
+
+        Rect unitsTextBounds = new Rect();
+        unitsPaint.getTextBounds(units, 0, units.length(), unitsTextBounds);
+
+        int width = (textBounds.width() > unitsTextBounds.width()) ? textBounds.width() : unitsTextBounds.width();
+
+        Bitmap bitmap = Bitmap.createBitmap(width + 10, 90,
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawText(speed, width / 2 + 5, 50, paint);
+        canvas.drawText(units, width / 2, 90, unitsPaint);
+
+        return bitmap;
+    }
+
+    private void getDownloadSpeed() {
+
+        long mRxBytesPrevious = TrafficStats.getTotalRxBytes();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        long mRxBytesCurrent = TrafficStats.getTotalRxBytes();
+
+        long mDownloadSpeed = mRxBytesCurrent - mRxBytesPrevious;
+
+        float mDownloadSpeedWithDecimals;
+
+        if (mDownloadSpeed >= 1000000000) {
+            mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000000000;
+            mUnits = " GB";
+        } else if (mDownloadSpeed >= 1000000) {
+            mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000000;
+            mUnits = " MB";
+
+        } else {
+            mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000;
+            mUnits = " KB";
+        }
+
+
+        if (!mUnits.equals(" KB") && mDownloadSpeedWithDecimals < 100) {
+            mDownloadSpeedOutput = String.format(Locale.US, "%.1f", mDownloadSpeedWithDecimals);
+        } else {
+            mDownloadSpeedOutput = Integer.toString((int) mDownloadSpeedWithDecimals);
+        }
+
+    }
+
+    
 
     @Override
     public void onDestroy() {
