@@ -91,8 +91,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
         }
     }
 
-    private void initializeNotification(Context context) {
-        this.mContext = context;
+    private void initializeNotification() {
 
         mHandler = new Handler(Looper.getMainLooper()) {
 
@@ -115,7 +114,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
 
         };
 
-        mBuilder = new Notification.Builder(mContext);
+        mBuilder = new Notification.Builder();
         mBuilder.setSmallIcon(Icon.createWithBitmap(createBitmapFromString("0", " KB")));
         mBuilder.setContentTitle("");
         mBuilder.setVisibility(Notification.VISIBILITY_SECRET);
