@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-plugin-networkspeed1" version="1.0.0">
+   <name>NetworkSpeed1</name>
+
+   <js-module name="NetworkSpeed1" src="www/NetworkSpeed1.js">
+      <clobbers target="NetworkSpeed1" />
+   </js-module>
+
+   <platform name="android">
+      <config-file parent="/*" target="res/xml/config.xml">
+         <feature name="NetworkSpeed1">
+            <param name="android-package" value="cordova.plugin.networkspeed1.NetworkSpeed1" />
+         </feature>
+      </config-file>
+      <config-file parent="/*" target="AndroidManifest.xml" />
+      <source-file src="src/android/NetworkSpeed1.java" target-dir="src/cordova/plugin/networkspeed1/NetworkSpeed1" />
+   </platform>
+
+   <platform name="ios">
+      <config-file parent="/*" target="config.xml">
+         <feature name="NetworkSpeed1">
+            <param name="ios-package" value="NetworkSpeed1" />
+         </feature>
+      </config-file>
+      <source-file src="src/ios/NetworkSpeed1.m" />
+   </platform>
+</plugin>
