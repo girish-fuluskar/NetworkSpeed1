@@ -60,6 +60,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
     public boolean execute(String action, Context context, CallbackContext callbackContext) throws JSONException {
         if(action.equals("startServiceNow")) {
             this.startServiceNow(context);
+            return true;
         }
         return false;
     }
