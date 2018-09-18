@@ -57,21 +57,28 @@ public class NetworkSpeed1 extends CordovaPlugin {
     @Override
     public boolean execute(String action,Context context, CallbackContext callbackContext) {
         if(action.equals("startServiceNow")) {
-            this.startServiceNow(context);
+            this.startServiceNow(context, callbackContext);
             return true;
         }
         return false;
     }
 
     //Initiate Service
-    private void startServiceNow(Context context){
-        console.log("Initiate Plugin Service");
-        initializeNotification(context);
+    private void startServiceNow(Context context, CallbackContext callback){
+        try{
+            callback.success("", initializeNotification(context));
+        } catch(Exception ex){
+            callback.error("Error in start service" + ex);
+        }
+        
     }
 
     //Initialize Notification
-    private void initializeNotification(Context context){
-        console.log("Initializing Notifications with context: " + context);
-
+    private void initializeNotification(Context context, CallbackContext call){
+        try{
+            call.success("", context);
+        } catch(Exception ex){
+            call.error("Error in Initialize" + ex);
+        }
     }
 }
