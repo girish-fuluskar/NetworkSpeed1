@@ -55,7 +55,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
 
 
     @Override
-    public boolean execute(String action,Context context, CallbackContext callbackContext) throws JSONException {
+    public boolean execute(String action,Context context, CallbackContext callbackContext) {
         if(action.equals("startServiceNow")) {
             this.startServiceNow(context);
             return true;
@@ -65,13 +65,13 @@ public class NetworkSpeed1 extends CordovaPlugin {
 
     //Initiate Service
     private void startServiceNow(Context context){
-        console.Log("Initiate Plugin Service");
+        console.log("Initiate Plugin Service");
         initializeNotification(context);
     }
 
     //Initialize Notification
     private void initializeNotification(Context context){
-        console.Log("Initializing Notifications with context: " + context);
+        console.log("Initializing Notifications with context: " + context);
 
     }
 }
