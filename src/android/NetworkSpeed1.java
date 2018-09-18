@@ -66,7 +66,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
     //Initiate Service
     private void startServiceNow(Context context, CallbackContext callback){
         try{
-            initializeNotification(context);
+            initializeNotification(context, callback);
         } catch(Exception ex){
             callback.error("Error in start service" + ex);
         }
