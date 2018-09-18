@@ -66,7 +66,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
     //Initiate Service
     private void startServiceNow(Context context){
         console.Log("Initiate Plugin Service");
-        initializeNotification(context)
+        initializeNotification(context);
     }
 
     //Initialize Notification
