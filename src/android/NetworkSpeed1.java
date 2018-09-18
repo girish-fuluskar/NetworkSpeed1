@@ -54,7 +54,7 @@ public class NetworkSpeed1 extends CordovaPlugin {
     private boolean mDestroyed = false;
 
 
-    @Override
+    //@Override
     public boolean execute(String action,Context context, CallbackContext callbackContext) {
         if(action.equals("startServiceNow")) {
             this.startServiceNow(context, callbackContext);
